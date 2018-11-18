@@ -1,0 +1,5 @@
+*rap*.txt
+*.rhymes
+lyrics*.txt
+__pycache__/
+*.rap
