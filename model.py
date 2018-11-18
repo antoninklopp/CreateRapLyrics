@@ -170,7 +170,7 @@ def build_dataset(lines, rhyme_list, maxsyllables):
 	#print( "y shape " + str(y_data.shape)
 	return x_data, y_data
 	
-def compose_rap(lines, rhyme_list, lyrics_file, model, maxsyllables):
+def compose_rap(rhyme_list, lyrics_file, model, maxsyllables, lines):
 	rap_vectors = []
 	human_lyrics = split_lyrics_file(lyrics_file)
 	
@@ -184,7 +184,7 @@ def compose_rap(lines, rhyme_list, lyrics_file, model, maxsyllables):
 	starting_vectors = model.predict(np.array([starting_input]).flatten().reshape(1, 2, 2))
 	rap_vectors.append(starting_vectors)
 	
-	for i in range(20):
+	for i in range(lines):
 		rap_vectors.append(model.predict(np.array([rap_vectors[-1]]).flatten().reshape(1, 2, 2)))
 	
 	return rap_vectors
@@ -278,9 +278,9 @@ def train(x_data, y_data, model, artist):
 			  verbose=1)
 	model.save_weights(artist + ".rap")
 			  
-def main(depth, train_mode, artist, maxsyllables):
+def main(depth, train_mode, artist, maxsyllables, lines):
 	text_file = "lyrics_" + artist + ".txt"
-	rap_file = "nerual_rap_" + artist + ".txt"
+	rap_file = "neural_rap_" + artist + ".txt"
 
 	model = create_network(depth, train_mode, artist)
 	text_model = markov(text_file)
@@ -297,7 +297,7 @@ def main(depth, train_mode, artist, maxsyllables):
 		train(x_data, y_data, model, artist)
 
 	if train_mode == False:
-		vectors = compose_rap(bars, rhyme_list, text_file, model, maxsyllables)
+		vectors = compose_rap(rhyme_list, text_file, model, maxsyllables, lines)
 		rap = vectors_into_song(vectors, bars, rhyme_list, maxsyllables)
 		f = open(rap_file, "w")
 		for bar in rap:
